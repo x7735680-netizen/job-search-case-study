@@ -71,7 +71,7 @@ export default function MvpWorkflow({
               </div>
 
               <div className="grid gap-6 transition-[opacity,transform] duration-400 md:grid-cols-2 md:gap-8">
-                <MvpVisual step={step} isActive={isActive} />
+                <MvpVisual step={step} isActive={isActive} isEager={index === 0} />
                 <div className={`flex flex-col justify-center gap-4 ${index % 2 === 1 ? "md:order-first" : ""}`}>
                   <span className="eyebrow">
                     {String(index + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
@@ -104,13 +104,22 @@ export default function MvpWorkflow({
   );
 }
 
-function MvpVisual({ step, isActive }: { step: MvpStep; isActive: boolean }) {
+function MvpVisual({
+  step,
+  isActive,
+  isEager,
+}: {
+  step: MvpStep;
+  isActive: boolean;
+  isEager: boolean;
+}) {
   if (step.visual.type === "video") {
     return (
       <VideoShowcase
         src={step.visual.src}
         alt={step.visual.alt}
         isActive={isActive}
+        isEager={isEager}
       />
     );
   }
@@ -135,16 +144,43 @@ function VideoShowcase({
   src,
   alt,
   isActive,
+  isEager,
 }: {
   src?: string;
   alt: string;
   isActive: boolean;
+  isEager: boolean;
 }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(isEager);
+
+  useEffect(() => {
+    setShouldLoad(isEager);
+  }, [isEager, src]);
+
+  useEffect(() => {
+    if (!src || shouldLoad) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        setShouldLoad(true);
+        observer.disconnect();
+      },
+      { rootMargin: "1000px 0px", threshold: 0 }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [shouldLoad, src]);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !src) return;
+    if (!video || !src || !shouldLoad) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     video.muted = true;
@@ -155,22 +191,35 @@ function VideoShowcase({
       return;
     }
 
-    video.currentTime = 0;
-    void video.play().catch(() => {
-      // Autoplay can be blocked by the browser; the poster/first frame remains visible.
-    });
-  }, [isActive, src]);
+    const playWhenReady = () => {
+      video.currentTime = 0;
+      void video.play().catch(() => {
+        // Autoplay can be blocked by the browser; the poster/first frame remains visible.
+      });
+    };
+
+    if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      playWhenReady();
+      return;
+    }
+
+    video.addEventListener("canplay", playWhenReady, { once: true });
+    return () => video.removeEventListener("canplay", playWhenReady);
+  }, [isActive, shouldLoad, src]);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-line bg-white shadow-[0_24px_48px_-24px_rgba(17,17,17,0.18)]">
+    <div
+      ref={containerRef}
+      className="relative w-full overflow-hidden rounded-2xl border border-line bg-white shadow-[0_24px_48px_-24px_rgba(17,17,17,0.18)]"
+    >
       <video
         ref={videoRef}
-        src={src}
+        src={shouldLoad ? src : undefined}
         aria-label={alt}
         muted
         playsInline
         loop
-        preload="metadata"
+        preload={shouldLoad ? (isEager ? "metadata" : "auto") : "none"}
         className="block aspect-[16/9] h-full w-full object-cover"
       />
     </div>
