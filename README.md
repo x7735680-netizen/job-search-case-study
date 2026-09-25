@@ -24,7 +24,7 @@ A standalone long-scroll case study built with **Vite + React + TypeScript + Tai
 | `components/sections/` | `hero-section`, `problem-section`, `product-section`, `building-with-ai-section`, `ai-thinking-section`, `mvp-next-section` |
 | `components/ui/` | `section-label`, `section-header`, `stat-pill`, `icon-card`, `feature-card`, `insight-card`, `workflow-step`, `comparison-column`, `image-showcase`, `product-placeholder`, `reveal` |
 | `public/assets/hero/` | `background.webp`, `hero-product-poster.png` |
-| `public/assets/product/` | Product screenshots (placeholders until supplied) |
+| `public/assets/product/` | Five product demo videos and matching first-frame poster PNGs |
 
 ## Run
 
@@ -45,6 +45,6 @@ The decorative `background.webp` lives in a top-anchored absolute layer (`compon
 - All animations honor `prefers-reduced-motion: reduce` (handled both in `globals.css` and by the GSAP toggles).
 - Hover lifts on cards are pure CSS via Tailwind.
 
-## Missing assets
+## Product demo assets
 
-Until the four product `.jpg` files (`product-knowledge-base`, `product-job-matching`, `product-tailored-resume`, `product-build-evidence`) are supplied, `<ImageShowcase>` renders a tasteful `<ProductPlaceholder>` (light-blue dashed frame + label). Drop real `.jpg` files into `public/assets/product/` with the expected filenames and the page picks them up automatically — no code change required.
+The MVP workflow uses matching video and poster pairs in `public/assets/product/`: `01.mp4` + `01.png` through `05.mp4` + `05.png`. The PNG is shown immediately while the video is lazy-loaded, before playback starts, when autoplay is unavailable, and when reduced motion is enabled.

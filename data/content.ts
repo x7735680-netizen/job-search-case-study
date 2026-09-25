@@ -42,6 +42,7 @@ export type BuildingTool = {
 export type MvpVisual = {
   type: "image" | "video" | "workflow" | "tracking";
   src?: string;
+  poster?: string;
   alt: string;
 };
 
@@ -282,6 +283,7 @@ export const content = {
           visual: {
             type: "video",
             src: "/assets/product/01.mp4",
+            poster: "/assets/product/01.png",
             alt: "Personal knowledge base — 编辑用户个人经历、技能和求职偏好。",
           },
         },
@@ -295,6 +297,7 @@ export const content = {
           visual: {
             type: "video",
             src: "/assets/product/02.mp4",
+            poster: "/assets/product/02.png",
             alt: "Workflow automation — 岗位偏好经过筛选后形成机会库。",
           },
         },
@@ -308,6 +311,7 @@ export const content = {
           visual: {
             type: "video",
             src: "/assets/product/03.mp4",
+            poster: "/assets/product/03.png",
             alt: "Job matching panel — 对岗位做拆解并与用户经历做匹配分析。",
           },
         },
@@ -321,6 +325,7 @@ export const content = {
           visual: {
             type: "video",
             src: "/assets/product/04.mp4",
+            poster: "/assets/product/04.png",
             alt: "Tailored resume output — 基于岗位重点生成的定制化简历。",
           },
         },
@@ -334,6 +339,7 @@ export const content = {
           visual: {
             type: "video",
             src: "/assets/product/05.mp4",
+            poster: "/assets/product/05.png",
             alt: "Structured tracking — 投递状态与可复用个人 Context 保持连接。",
           },
         },

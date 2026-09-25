@@ -117,6 +117,7 @@ function MvpVisual({
     return (
       <VideoShowcase
         src={step.visual.src}
+        poster={step.visual.poster}
         alt={step.visual.alt}
         isActive={isActive}
         isEager={isEager}
@@ -142,11 +143,13 @@ function MvpVisual({
 
 function VideoShowcase({
   src,
+  poster,
   alt,
   isActive,
   isEager,
 }: {
   src?: string;
+  poster?: string;
   alt: string;
   isActive: boolean;
   isEager: boolean;
@@ -215,6 +218,7 @@ function VideoShowcase({
       <video
         ref={videoRef}
         src={shouldLoad ? src : undefined}
+        poster={poster}
         aria-label={alt}
         muted
         playsInline
